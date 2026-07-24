@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Autonomous Research Agent (Agentic CRAG Pipeline)
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-Stateful_AI-0052FF?style=flat)
+![Google Gemini](https://img.shields.io/badge/Google_Gemini-API-4285F4?style=flat&logo=google)
+![Status](https://img.shields.io/badge/Status-Active_Development-success)
 
-First, run the development server:
+A robust, multi-agent **Retrieval-Augmented Generation (RAG)** system built to automate deep research and document synthesis. Engineered with Next.js and LangGraph, this project moves beyond standard linear RAG pipelines by implementing a **Corrective RAG (CRAG)** architecture. 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Instead of blindly generating answers from retrieved text, this stateful agent evaluates its own findings, rejects irrelevant context, and dynamically reroutes its search strategy to strictly mitigate LLM hallucinations.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🎯 The Problem It Solves
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Standard RAG systems suffer from a critical flaw: if the vector database returns poor or irrelevant context, the LLM will still attempt to generate an answer, often leading to hallucinations. 
 
-## Learn More
+**This project solves this by introducing a self-reflective "Critic" node.** The system acts as a deterministic state machine that grades the fidelity of its own retrieval before it is allowed to synthesize a final report.
 
-To learn more about Next.js, take a look at the following resources:
+## ✨ Advanced Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **Stateful Agent Orchestration (LangGraph):** Utilizes a cyclic graph architecture to manage conversation state, retry counts, and conditional edge routing, allowing the agent to "think" in loops rather than a straight line.
+* **LLM-as-a-Judge (Critic Node):** Implements an autonomous evaluation step where the model grades the semantic relevance of retrieved PDF chunks against the user's query. If graded "NO", the agent refuses to answer and triggers a fallback search.
+* **Custom Native Embeddings:** Bypasses legacy open-source library bottlenecks by utilizing a custom `Embeddings` class written directly against the modern `@google/genai` SDK, ensuring high-throughput, error-free vectorization.
+* **Real-Time Execution Streaming:** Leverages Server-Sent Events (SSE) via the Next.js App Router to stream the agent's internal node transitions and state updates directly to the client UI.
+* **Intelligent Document Processing:** Features overlapping `RecursiveCharacterTextSplitter` logic to maintain semantic boundaries during PDF and TXT chunking.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🏗️ System Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### The Agentic Graph Flow
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+                      [ User Input ]
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │  Router Node  │──(Intent: Live News)──┐
+                    └───────────────┘                       │
+                            │                               │
+                     (Intent: Research)                     │
+                            │                               │
+                            ▼                               ▼
+                    ┌───────────────┐               ┌───────────────┐
+                    │   Retriever   │               │   Web Search  │
+                    │ (Vector DB)   │               │  (Fallback)   │
+                    └───────────────┘               └───────────────┘
+                            │                               │
+                            └──────────────┬────────────────┘
+                                           │
+                                           ▼
+                                ┌─────────────────────┐
+                                │     Critic Node     │
+                                │ (Evaluates Context) │
+                                └─────────────────────┘
+                                           │
+                        ┌──────────────────┴──────────────────┐
+                        │                                     │
+                   (Score: NO)                           (Score: YES)
+             (Triggers Web Fallback)                          │
+                        │                                     ▼
+                        │                          ┌─────────────────────┐
+                        └──────────────────────────│   Generator Node    │
+                                                   │ (Markdown Synthesis)│
+                                                   └─────────────────────┘
