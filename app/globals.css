@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f6fa;
+  --foreground: #172033;
 }
 
 @theme inline {
@@ -12,15 +12,84 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
+  background:
+    radial-gradient(circle at 0% 0%, #e8edff 0, transparent 25rem),
+    var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: #cdd7ff;
+  color: #172033;
+}
+
+.research-prose {
+  color: #334155;
+  line-height: 1.7;
+}
+
+.research-prose > :first-child {
+  margin-top: 0;
+}
+
+.research-prose > :last-child {
+  margin-bottom: 0;
+}
+
+.research-prose h1,
+.research-prose h2,
+.research-prose h3 {
+  color: #172033;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 1.35em 0 0.55em;
+}
+
+.research-prose h1 {
+  font-size: 1.25rem;
+}
+
+.research-prose h2 {
+  font-size: 1.1rem;
+}
+
+.research-prose p,
+.research-prose ul,
+.research-prose ol {
+  margin: 0.8em 0;
+}
+
+.research-prose ul,
+.research-prose ol {
+  padding-left: 1.3rem;
+}
+
+.research-prose ul {
+  list-style: disc;
+}
+
+.research-prose ol {
+  list-style: decimal;
+}
+
+.research-prose code {
+  border-radius: 0.35rem;
+  background: #e9edf7;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.85em;
+}
+
+.research-prose blockquote {
+  margin: 1rem 0;
+  border-left: 3px solid #a5b4fc;
+  padding-left: 0.9rem;
+  color: #64748b;
 }

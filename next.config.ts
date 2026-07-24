@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Add this exact block:
+  serverExternalPackages: ["pdf-parse", "pdfjs-dist", "canvas"],
 };
 
 export default nextConfig;
